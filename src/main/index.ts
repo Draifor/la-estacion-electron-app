@@ -1,6 +1,8 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { autoUpdater } from 'electron-updater'
+import log from 'electron-log'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
@@ -49,7 +51,15 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  log.info('App starting...')
+  log.info('App version: ' + app.getVersion())
+
   createWindow()
+
+  // Auto update
+  if (!is.dev) {
+    autoUpdater.checkForUpdatesAndNotify()
+  }
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -69,3 +79,32 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+// Auto update events
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for update...')
+  console.log('Checking for update...')
+})
+autoUpdater.on('update-available', () => {
+  log.info('Update available.')
+  console.log('Update available.')
+})
+autoUpdater.on('update-not-available', () => {
+  log.info('Update not available.')
+  console.log('Update not available.')
+})
+autoUpdater.on('error', (err) => {
+  log.error('Error in auto-updater. ' + err)
+  console.log('Error in auto-updater. ' + err)
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
+  log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')'
+  log.info(log_message)
+  console.log(log_message)
+})
+autoUpdater.on('update-downloaded', () => {
+  log.info('Update downloaded')
+  console.log('Update downloaded')
+})
