@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function Versions(): JSX.Element {
+function Versions(): React.ReactNode {
   const [versions] = useState(window.electron.process.versions)
   const [appVersion] = useState(window.electron.process.env.npm_package_version)
   console.log('versions', appVersion)

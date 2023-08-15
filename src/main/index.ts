@@ -1,26 +1,37 @@
 import { app, shell, BrowserWindow } from 'electron'
-import { join } from 'path'
+import { join } from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
-import icon from '../../resources/icon.png?asset'
+
+import icon from '../../resources/favicon.ico?asset'
+import { partition } from './session'
+import { registerIpcEvents } from './ipcEvents/ipcEvents'
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 1000,
+    height: 800,
+    minWidth: 700,
+    minHeight: 670,
     show: false,
-    autoHideMenuBar: true,
+    backgroundColor: '#242424',
+    title: 'Sistema de Inventarios - La Estación Pandebonos',
+    icon,
+    // autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      partition
     }
   })
 
   mainWindow.on('ready-to-show', () => {
+    mainWindow.maximize()
     mainWindow.show()
+    mainWindow.focus()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -35,6 +46,9 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  // Register ipc events
+  registerIpcEvents(mainWindow)
 }
 
 // This method will be called when Electron has finished
