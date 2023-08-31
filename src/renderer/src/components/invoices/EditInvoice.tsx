@@ -105,7 +105,7 @@ export default function EditInvoice(): React.ReactNode {
 
       if (!invoiceUpdated) return
 
-      const updatedInvoices = invoices.map((invoice): void => {
+      const updatedInvoices = invoices.map((invoice): InvoiceType => {
         if (invoice.id === editInvoiceId) {
           return invoiceUpdated
         }

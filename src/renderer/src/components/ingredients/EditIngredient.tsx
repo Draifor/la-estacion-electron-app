@@ -329,3 +329,7 @@
 //     </PageContainer>
 //   );
 // }
+
+export default function EditIngredient(): React.ReactNode {
+  return <div></div>
+}

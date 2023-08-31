@@ -17,12 +17,15 @@ const api: API = {
     buttons: string[],
     message: string
   ) => {
-    const result = await electronAPI.ipcRenderer.invoke('show-confirm', { type, title, buttons, message })
+    const result = await electronAPI.ipcRenderer.invoke('show-confirm', {
+      type,
+      title,
+      buttons,
+      message
+    })
     return result
   }
 }
-console.log('preload/index.ts -> api: ', api)
-console.log('preload/index.ts -> electronAPI: ', electronAPI)
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.

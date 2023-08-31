@@ -1,16 +1,33 @@
-import { is } from '@electron-toolkit/utils'
-import { session } from 'electron'
-import { join } from 'node:path'
+import fs from 'fs/promises'
+import path from 'path'
+import { app } from 'electron'
+import { MainSessionData } from '../types/session'
 
-export const partition = 'persist:webviewsession'
+const userDataPath = app.getPath('userData')
+const sessionFilePath = path.join(userDataPath, 'session.json')
 
-export function getWebviewSession(): Electron.Session {
-  return session.fromPartition(partition)
+export async function saveSession(sessionData: MainSessionData): Promise<void> {
+  try {
+    await fs.writeFile(sessionFilePath, JSON.stringify(sessionData))
+  } catch (error) {
+    console.error('Error saving session:', error)
+  }
 }
 
-// HMR for renderer base on electron-vite cli.
-// Load the remote URL for development or the local html file for production.
-export const url =
-  is.dev && process.env['ELECTRON_RENDERER_URL']
-    ? process.env['ELECTRON_RENDERER_URL']
-    : `file://${join(__dirname, '../renderer/index.html')}`
+export async function loadSession(): Promise<MainSessionData | null> {
+  try {
+    const data = await fs.readFile(sessionFilePath, 'utf-8')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('Error loading session:', error)
+    return null
+  }
+}
+
+export async function clearSession(): Promise<void> {
+  try {
+    await fs.unlink(sessionFilePath)
+  } catch (error) {
+    console.error('Error clearing session:', error)
+  }
+}

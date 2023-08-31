@@ -1,7 +1,7 @@
 import { IpcMainEvent } from 'electron'
 
-import { getWebviewSession, url } from '../session'
 import { MainSessionData, RendererSessionData } from '../../types/session'
+import { saveSession } from '../session'
 
 export default async function handleLogin(
   event: IpcMainEvent,
@@ -10,17 +10,11 @@ export default async function handleLogin(
   const { username, role, token } = user
   let userData: RendererSessionData = null
 
-  console.log('ipcEvents/login.ts -> url: ', url)
-
   try {
-    const sessionCookies = {
-      url,
-      name: 'session',
-      value: JSON.stringify({ token, username, role })
-    }
+    const sessionData = { username, role, token }
 
-    const webviewSession = getWebviewSession()
-    await webviewSession.cookies.set(sessionCookies)
+    await saveSession(sessionData)
+
     userData = { username, role }
   } catch (error) {
     console.log('ipcEvents/login.ts -> error: ', error)

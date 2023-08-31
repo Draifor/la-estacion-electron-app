@@ -5,8 +5,8 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 
 import icon from '../../resources/favicon.ico?asset'
-import { partition } from './session'
 import { registerIpcEvents } from './ipcEvents/ipcEvents'
+import { clearSession } from './session'
 
 function createWindow(): void {
   // Create the browser window.
@@ -23,8 +23,7 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      partition
+      sandbox: false
     }
   })
 
@@ -86,9 +85,11 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  clearSession().then(() => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
 })
 
 // In this file you can include the rest of your app"s specific main process
