@@ -77,8 +77,8 @@ export default function Navigation(): React.ReactNode {
   ]
 
   return (
-    <nav className="bg-gray-700 h-16">
-      <div className="container mx-auto px-4 w-[90vw] max-w-7xl">
+    <div className="px-2 w-[90vw] max-w-6xl">
+      <nav className="px-4 bg-gray-700 h-16">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Link to="/" className="text-white font-bold text-lg">
@@ -110,7 +110,7 @@ export default function Navigation(): React.ReactNode {
           </div>
           <SessionButtons />
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   )
 }
